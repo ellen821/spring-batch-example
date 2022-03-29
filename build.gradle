@@ -1,0 +1,82 @@
+// build script 라이브러리 클래스패스 추가.
+buildscript {
+    ext {
+        domainName = "onstyle-example-batch"
+        // java version
+        javaVersion = JavaVersion.VERSION_17
+        // Library 버전.
+        projectLibraryVersion = "0.0.1.RELEASE"
+        // onstyle-framework include 버전 정의.
+        onStyleFrameworkVersion = "1.0.0.BUILD-SNAPSHOT"
+        onStyleStarterVersion = "1.0.0.BUILD-SNAPSHOT"
+        // springBoot 버전 정의.
+        springBootVersion = "2.6.4"
+        // lombok version
+        lombokVersion = "1.18.22"
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'idea'
+    id 'org.springframework.boot' version "$springBootVersion"
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+wrapper {
+    gradleVersion = "7.4.1"
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+allprojects {
+    group "com.cjonstyle.${domainName}"
+    idea {
+        module {
+            inheritOutputDirs = false
+        }
+    }
+}
+
+sourceCompatibility = "${javaVersion}"
+targetCompatibility = "${javaVersion}"
+
+// compile encoding 설정.
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+configurations {
+    providedRuntime
+}
+
+configurations.all {
+    all*.exclude group: 'org.apache.logging.log4j'
+    // 변하는 모듈(Changing Module)을 캐시하지 않음
+    resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+}
+
+dependencies {
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
+
+//    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    implementation("org.springframework.boot:spring-boot-starter-batch:${springBootVersion}")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.batch:spring-batch-test")
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

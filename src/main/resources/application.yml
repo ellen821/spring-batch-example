@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: onstyle-example-batch
+  profiles:
+    active: local # default profile
+  main:
+    #    web-application-type: none
+    allow-bean-definition-overriding: true
+  batch:
+    job:
+      enabled : true # ?? ??
+      names: ${job.name:NONE}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  batch:
+    initializer:
+      enabled: false
+    initialize-schema: never
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/springbatch?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: pass
+    driver-class-name: com.mysql.jdbc.Driver
+
+crawler:
+  item:
+    base-path: /System/Volumes/Data/data/item
+    remain-size: 2
+    static-thread-count: 2
+    dynamic-thread-count: 2
+  plain:
+    base-path: /System/Volumes/Data/data/plan
+    remain-size: 2
