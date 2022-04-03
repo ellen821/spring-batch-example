@@ -38,3 +38,21 @@ crawler:
   plain:
     base-path: /System/Volumes/Data/data/plan
     remain-size: 2
+
+indexer:
+  search:
+    es:
+      host: localhost
+      port: 9200
+      http-protocol: http
+      userName: elastic
+      password: BS9Rj2uoY1b4VQY4bjeM
+    item:
+
+  display:
+    es:
+      host: localhost
+      port: 9200
+      http-protocol: http
+      userName: elastic
+      password: BS9Rj2uoY1b4VQY4bjeM
