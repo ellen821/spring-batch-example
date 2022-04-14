@@ -4,6 +4,7 @@ public class DefineConstant {
 
     public static final String LOCK_FILE_EXTENSION = ".lock";
     public static final String DONE_FILE_EXTENSION = ".done";
+    public static final String ERROR_FILE_EXTENSION = ".error";
     public static final String HISTORY_FILE = "history";
 
     public static final String RESTORE_FILE = "restore_dynamic_data";

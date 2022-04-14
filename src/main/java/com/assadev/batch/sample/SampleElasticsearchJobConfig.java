@@ -2,7 +2,6 @@ package com.assadev.batch.sample;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.MgetResponse;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -18,13 +17,13 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
 
-@Configuration
+//@Configuration
 @RequiredArgsConstructor
 public class SampleElasticsearchJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final ElasticsearchClient searchClient;
+    private final ElasticsearchClient client;
 
     private static class SomeApplicationData {}
 
@@ -44,7 +43,7 @@ public class SampleElasticsearchJobConfig {
                     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
                         System.out.println(" >>>>> Sample Elasticsearch Step!!!");
 
-                        MgetResponse<TestIndexData> response = searchClient.mget(r->r
+                        MgetResponse<TestIndexData> response = client.mget(r->r
                                         .index("test-index")
                                         .ids(Arrays.asList("1"))
                                 , TestIndexData.class);

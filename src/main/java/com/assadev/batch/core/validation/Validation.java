@@ -14,17 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Validation {
-
-    public static final String DONE_CHECK_MESSAGE = "[DoneValidation] Normally crawling collected folder exist, [Indexer] with out doing [Crawler]";
-
     public static final String PID_CHECK_MESSAGE = "[PidValidation] The Crawler process is running with the PID";
     public static final String PID_NULL_MESSAGE = "[PidValidation] PidValidation get pid is null";
-    public static final String PID_READ_MESSAGE = "[PidValidation] PidValidation read lock file failure";
-
-    /** Dynamic Only **/
-    public static final String HISTORY_CHECK_MESSAGE = "[HistoryValidation] Before 'Dynamic' work, do the 'Static' first";
-
-    public static final String FOLDER_CHECK_MESSAGE = "[FolderValidation] Crawler & Index empty | Crawler is empty Index is not empty, Indexer cannot proceed";
 
     /**
      * Lock Check Validation

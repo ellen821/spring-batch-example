@@ -7,8 +7,6 @@ import java.time.temporal.ChronoUnit;
 
 public class DateUtils {
 
-
-
     public static String getNowDateTime() {
         return getNowDateTime("yyyy-MM-dd'T'HH:mm:ss");
     }

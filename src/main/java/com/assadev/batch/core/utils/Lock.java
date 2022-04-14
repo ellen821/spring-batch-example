@@ -34,7 +34,7 @@ public class Lock {
 
     public boolean lock() throws DirectoryException, IOException {
 
-        DirectoryUtil.create(this.targetPath);
+        DirectoryUtils.create(this.targetPath);
 
         Set<StandardOpenOption> options = new HashSet<>();
         options.add(StandardOpenOption.CREATE_NEW);

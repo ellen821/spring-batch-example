@@ -10,7 +10,7 @@ buildscript {
         onStyleFrameworkVersion = "1.0.0.BUILD-SNAPSHOT"
         onStyleStarterVersion = "1.0.0.BUILD-SNAPSHOT"
         // springBoot 버전 정의.
-        springBootVersion = '2.6.5'
+        springBootVersion = '2.6.6'
         // lombok version
         lombokVersion = "1.18.22"
     }
@@ -21,10 +21,12 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'java-library'
     id 'maven-publish'
     id 'idea'
     id 'org.springframework.boot' version "$springBootVersion"
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.sonarqube' version('3.0')
 }
 
 wrapper {
@@ -67,11 +69,16 @@ dependencies {
 //    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
 
-    implementation("org.springframework.boot:spring-boot-starter-batch:${springBootVersion}")
+    implementation "org.springframework.boot:spring-boot-starter-batch:${springBootVersion}"
     implementation 'co.elastic.clients:elasticsearch-java:8.1.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
     implementation 'jakarta.json:jakarta.json-api:2.0.1'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+    implementation 'org.mybatis:mybatis-typehandlers-jsr310:1.0.2'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+    implementation "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.batch:spring-batch-test")

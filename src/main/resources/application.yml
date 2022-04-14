@@ -2,57 +2,69 @@ spring:
   application:
     name: onstyle-example-batch
   profiles:
-    active: local # default profile
+    default: local # default profile
   main:
-    #    web-application-type: none
+    web-application-type: none
     allow-bean-definition-overriding: true
   batch:
     job:
-      enabled : true # ?? ??
-      names: ${job.name:NONE}
+#      enabled : true # ?? ??
+      names: ${job.name:EMPTY}
 
 ---
 
 spring:
-  config:
-    activate:
-      on-profile: local
+  profiles:
+    active: local
 
   batch:
-    initializer:
-      enabled: false
-    initialize-schema: never
+    jdbc:
+      initialize-schema: always
 
   datasource:
-    url: jdbc:mysql://localhost:3306/springbatch?useUnicode=true&characterEncoding=utf8
-    username: root
-    password: pass
-    driver-class-name: com.mysql.jdbc.Driver
+    primary:
+      driver-class-name: com.mysql.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/springbatch?useUnicode=true&characterEncoding=utf8
+      username: root
+      password: pass
 
 crawler:
-  item:
-    base-path: /System/Volumes/Data/data/item
-    remain-size: 2
-    static-thread-count: 2
-    dynamic-thread-count: 2
-  plain:
-    base-path: /System/Volumes/Data/data/plan
-    remain-size: 2
+  base-path: /System/Volumes/Data/data/{SERVICE_NAME}/{INDEX_TYPE}/{DATA_TYPE}
+  directory-name-pattern: yyyyMMdd-HHmmss
+  directory-remain-size: 1
+  file-row-max-size: 100000
+  file-name: item_%d.json
 
-indexer:
-  search:
-    es:
-      host: localhost
-      port: 9200
-      http-protocol: http
-      userName: elastic
-      password: BS9Rj2uoY1b4VQY4bjeM
-    item:
+#indexer:
+#  base-path: /System/Volumes/Data/data/{SERVICE_NAME}/{CLUSTER_NAME}/{INDEX_TYPE}/{DATA_TYPE}
+#  es:
+#    host: localhost
+#    port: 9200
+#    http-protocol: http
+#    userName: elastic
+#    password: BS9Rj2uoY1b4VQY4bjeM
 
-  display:
-    es:
-      host: localhost
-      port: 9200
-      http-protocol: http
-      userName: elastic
-      password: BS9Rj2uoY1b4VQY4bjeM
+item:
+  crwaler:
+    static:
+      thread-count: 4
+      source-tables:
+        - V_SEARCH_ITEM_001
+        - V_SEARCH_ITEM_002
+        - V_SEARCH_ITEM_003
+        - V_SEARCH_ITEM_004
+#    dynamic:
+#      thread-count: 2
+#      source-tables:
+#        - V_SEARCH_ITEM_001
+#        - V_SEARCH_ITEM_002
+#  indexer:
+#    service-aliaes:
+#      - item
+#    static:
+#      thread-count: 2
+#      shards: 3
+#      replicas: 1
+#      refresh-intaval: 5s
+#    dynamic:
+#      thread-count: 2
