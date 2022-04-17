@@ -1,17 +1,30 @@
  package com.assadev.batch.crawler.item.job;
 
+ import com.assadev.batch.crawler.item.chunk.*;
+ import com.assadev.batch.crawler.item.constant.ItemStaticCrawlerView;
+ import com.assadev.batch.crawler.item.model.CrawlerItem;
  import com.assadev.batch.crawler.item.tasklet.ItemStaticCrawlerCompleteTasklet;
  import com.assadev.batch.crawler.item.tasklet.ItemStaticCrawlerValidateTasklet;
  import lombok.RequiredArgsConstructor;
  import lombok.extern.slf4j.Slf4j;
+ import org.apache.ibatis.session.SqlSessionFactory;
+ import org.mybatis.spring.batch.MyBatisCursorItemReader;
  import org.springframework.batch.core.Job;
  import org.springframework.batch.core.Step;
  import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
  import org.springframework.batch.core.configuration.annotation.JobScope;
  import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+ import org.springframework.batch.core.configuration.annotation.StepScope;
  import org.springframework.batch.core.launch.support.RunIdIncrementer;
+ import org.springframework.beans.factory.annotation.Value;
  import org.springframework.context.annotation.Bean;
  import org.springframework.context.annotation.Configuration;
+ import org.springframework.core.task.SimpleAsyncTaskExecutor;
+
+ import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
 
  @Slf4j
 @Configuration
@@ -23,9 +36,10 @@ public class ItemStaticCrawlerJobConfig {
 
     private final ItemStaticCrawlerJobListener itemStaticCrawlerJobListener;
     private final ItemStaticCrawlerValidateTasklet itemStaticCrawlerValidateTasklet;
-//    private final ItemStaticCrawlerListener itemStaticCrawlerListener;
-//    private final ItemStaticCrawlerItemProcessor itemStaticCrawlerItemProcessor;
-//    private final ItemStaticCrawlerItemWriter itemStaticCrawlerItemWriter;
+    private final ItemCrawlerPartitioner itemCrawlerPartitioner;
+    private final ItemStaticCrawlerListener itemStaticCrawlerListener;
+    private final ItemStaticCrawlerItemProcessor itemStaticCrawlerItemProcessor;
+    private final ItemStaticCrawlerItemWriter itemStaticCrawlerItemWriter;
     private final ItemStaticCrawlerCompleteTasklet itemStaticCrawlerCompleteTasklet;
 
     @Bean
@@ -34,7 +48,7 @@ public class ItemStaticCrawlerJobConfig {
                 .incrementer(new RunIdIncrementer())
                 .listener(itemStaticCrawlerJobListener)
                 .start(itemStaticCrawlerValidateStep())
-//                .next(itemStaticCrawlerStep())
+                .next(itemStaticCrawlerStep())
                 .next(itemStaticCrawlerCompleteStep())
                 .build();
     }
@@ -47,36 +61,46 @@ public class ItemStaticCrawlerJobConfig {
                 .build();
     }
 
-//    @Bean
-//    public Step itemStaticCrawlerStep() {
-//        return stepBuilderFactory.get("itemStaticCrawlerStep")
-////                .listener(itemStaticCrawlerListener)
-//                .partitioner(itemStaticCrawlerSlaveStep().getName(), itemCrawlerPartitioner())
-//                .step(itemStaticCrawlerSlaveStep())
-//                .gridSize(4)
-//                .taskExecutor(new SimpleAsyncTaskExecutor())
-//                .build();
-//    }
+    @Bean
+    public Step itemStaticCrawlerStep() {
+        itemCrawlerPartitioner.setMapperCount(2);
+        return stepBuilderFactory.get("itemStaticCrawlerStep")
+                .listener(itemStaticCrawlerListener)
+                .partitioner(itemStaticCrawlerSlaveStep().getName(), itemCrawlerPartitioner)
+                .step(itemStaticCrawlerSlaveStep())
+                .gridSize(2)
+                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .build();
+    }
 
-//    @Bean
-//    public ItemCrawlerPartitioner itemCrawlerPartitioner() {
-//        ItemCrawlerPartitioner itemCrawlerPartitioner = new ItemCrawlerPartitioner();
-////        itemCrawlerPartitioner.setMapperCount(ItemStaticCrawlerView.count());
-//        itemCrawlerPartitioner.setMapperCount(2);
-//
-//        return itemCrawlerPartitioner;
-//    }
-//
-//     @Bean
-//     public Step itemStaticCrawlerSlaveStep() {
-//         return stepBuilderFactory.get("itemStaticCrawlerSlaveStep")
-//                 .<CrawlerItem, CrawlerItem>chunk(6)
-//                 .reader(itemStaticCrawlerItemReader(null))
-//                 .processor(itemStaticCrawlerItemProcessor)
-//                 .writer(itemStaticCrawlerItemWriter)
-//                 .build();
-//     }
-//
+     @Bean
+     public Step itemStaticCrawlerSlaveStep() {
+         return stepBuilderFactory.get("itemStaticCrawlerSlaveStep")
+                 .<CrawlerItem, CrawlerItem>chunk(6)
+                 .reader(itemStaticCrawlerItemReader(null, null))
+                 .processor(itemStaticCrawlerItemProcessor)
+                 .writer(itemStaticCrawlerItemWriter)
+                 .build();
+     }
+
+     @Bean
+     @StepScope
+     public MyBatisCursorItemReader<CrawlerItem> itemStaticCrawlerItemReader(SqlSessionFactory sqlSessionFactory,
+                                                                             @Value("#{stepExecutionContext['viewNumber']}") Integer viewNumber){
+
+         Map<String, Object> parameterValues = new HashMap<>();
+         parameterValues.put("cateId", ItemStaticCrawlerView.findView(viewNumber).getViewName());
+
+         MyBatisCursorItemReader<CrawlerItem> myBatisCursorItemReader = new MyBatisCursorItemReader<>();
+         myBatisCursorItemReader.setSqlSessionFactory(sqlSessionFactory);
+         myBatisCursorItemReader.setParameterValues(parameterValues);
+         myBatisCursorItemReader.setQueryId("com.assadev.batch.crawler.item.mapper.ItemMapper.getItemList");
+         return myBatisCursorItemReader;
+
+     }
+
+
+
 //     @Bean
 //     @StepScope
 //     public PaginationReader itemStaticCrawlerItemReader(
@@ -106,7 +130,7 @@ public class ItemStaticCrawlerJobConfig {
 //
 //         return new PaginationReader(pageSize, blockSize, itemList);
 //     }
-//
+
     @Bean
     public Step itemStaticCrawlerCompleteStep() {
         return stepBuilderFactory.get("itemStaticCrawlerCompleteStep")

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.assadev.batch.crawler.item.mapper.ItemMapper">
+    <select id="getItemList" parameterType="Map" resultType="com.assadev.batch.crawler.item.model.CrawlerItem">
+        SELECT DQ_ID, ITEM_NO, ITEM_NM FROM ITEM WHERE CATE_ID = #{cateId} ORDER BY ITEM_NO ASC
+    </select>
+</mapper>

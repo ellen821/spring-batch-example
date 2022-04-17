@@ -30,6 +30,6 @@ public class ItemDynamicCrawlerItemWriter implements ItemWriter<CrawlerItem> {
         // TODO : 수집 파일 생성
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(new File(crawlerPath, "itemCrawler" + commitNo + ".json"), items);
-        log.info(" ㄴㄴㄴㄴ Crawler Writer = " + items.stream().map(i->i.getDocId()).collect(Collectors.toList()));
+        log.info(" ㄴㄴㄴㄴ Crawler Writer = " + items.stream().map(i->i.getDqId()).collect(Collectors.toList()));
     }
 }

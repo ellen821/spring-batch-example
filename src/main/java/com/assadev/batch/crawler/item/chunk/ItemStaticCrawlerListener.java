@@ -1,6 +1,7 @@
 package com.assadev.batch.crawler.item.chunk;
 
 import com.assadev.batch.core.contant.DefineConstant;
+import com.assadev.batch.core.contant.IndexMode;
 import com.assadev.batch.core.exception.ValidationException;
 import com.assadev.batch.core.utils.DateUtils;
 import com.assadev.batch.core.utils.DirectoryUtils;
@@ -29,8 +30,8 @@ public class ItemStaticCrawlerListener  extends StepExecutionListenerSupport {
             // - Pre-SQL
             try {
                 // 수집 폴더 생성
-                String crawlerPath = stepExecution.getJobExecution().getExecutionContext().getString("targetPath") +
-                        File.separator + DefineConstant.FOLDER_CRAWLER + File.separator + DateUtils.getNowDateTime(DefineConstant.FOLDER_FORMAT);
+                String crawlerPath = stepExecution.getJobExecution().getExecutionContext().getString("basePath") +
+                        File.separator + DateUtils.getNowDateTime(DefineConstant.FOLDER_FORMAT);
                 DirectoryUtils.create(crawlerPath);
                 stepExecution.getJobExecution().getExecutionContext().putString("historyDateTime", DateUtils.getNowDateTime(DefineConstant.HISTORY_FORMAT));
                 stepExecution.getJobExecution().getExecutionContext().putString("crawlerPath", crawlerPath);
@@ -57,7 +58,7 @@ public class ItemStaticCrawlerListener  extends StepExecutionListenerSupport {
 
                 // done 파일 생성
                 ExecutionContext jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-                Done crawlerDone = new Done(jobExecutionContext.getString("targetPath"), jobExecutionContext.getString("targetIndexMode"));
+                Done crawlerDone = new Done(jobExecutionContext.getString("crawlerPath") , IndexMode.CRAWLER.getValue() + DefineConstant.DONE_FILE_EXTENSION);
                 crawlerDone.done(jobExecutionContext.getString("historyDateTime"));
 
             }catch (Exception e){

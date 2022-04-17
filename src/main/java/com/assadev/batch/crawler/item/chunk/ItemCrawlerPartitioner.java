@@ -2,10 +2,12 @@ package com.assadev.batch.crawler.item.chunk;
 
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class ItemCrawlerPartitioner implements Partitioner {
 
     private int mapperCount;

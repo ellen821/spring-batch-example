@@ -40,7 +40,7 @@ public class PaginationReader extends AbstractPagingItemReader<CrawlerItem> {
             List<CrawlerItem> result = itemList.stream().skip(getPage()*getPageSize()).limit(getPageSize())
                     .collect(Collectors.toList());
 
-            List<String> dd = result.stream().map(i->i.getDocId()).collect(Collectors.toList());
+            List<String> dd = result.stream().map(i->i.getDqId()).collect(Collectors.toList());
 
             log.info("page: " + getPage() + ", pageSize: " + getPageSize() + ", result: " + dd);
 

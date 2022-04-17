@@ -11,7 +11,7 @@ public class ItemStaticCrawlerItemProcessor implements ItemProcessor<CrawlerItem
     @Override
     public CrawlerItem process(CrawlerItem item) throws Exception {
         //TODO: row 단위로 처리 가능
-        log.info(" ㄴㄴㄴㄴ Crawler Processor = " + item.getDocId());
+        log.info(" ㄴㄴㄴㄴ Crawler Processor = " + item.getDqId());
         return item;
     }
 }

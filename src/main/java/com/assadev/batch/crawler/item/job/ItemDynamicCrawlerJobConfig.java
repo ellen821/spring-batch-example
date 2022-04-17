@@ -111,7 +111,7 @@
           List<CrawlerItem> itemList = new ArrayList<>();
           for(int i=1; i<=totalCount; i++){
               CrawlerItem crawlerItem = new CrawlerItem();
-              crawlerItem.setDocId(viewNumber+"_"+i);
+              crawlerItem.setDqId(viewNumber+"_"+i);
               itemList.add(crawlerItem);
           }
  

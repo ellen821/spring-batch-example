@@ -31,6 +31,6 @@ public class ItemStaticCrawlerItemWriter implements ItemWriter<CrawlerItem> {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(new File(crawlerPath, "itemCrawler" + commitNo + ".json"), items);
 
-        log.info(" ㄴㄴㄴㄴ Crawler Writer "+commitNo+" = " + items.stream().map(i->i.getDocId()).collect(Collectors.toList()));
+        log.info(" ㄴㄴㄴㄴ Crawler Writer "+commitNo+" = " + items.stream().map(i->i.getDqId()).collect(Collectors.toList()));
     }
 }
