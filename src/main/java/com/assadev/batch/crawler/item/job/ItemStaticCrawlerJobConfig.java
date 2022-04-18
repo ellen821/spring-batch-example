@@ -1,5 +1,6 @@
  package com.assadev.batch.crawler.item.job;
 
+ import com.assadev.batch.core.properties.CrawlerProperties;
  import com.assadev.batch.crawler.item.chunk.*;
  import com.assadev.batch.crawler.item.constant.ItemStaticCrawlerView;
  import com.assadev.batch.crawler.item.model.CrawlerItem;
@@ -16,11 +17,16 @@
  import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
  import org.springframework.batch.core.configuration.annotation.StepScope;
  import org.springframework.batch.core.launch.support.RunIdIncrementer;
+ import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
+ import org.springframework.batch.item.json.JsonFileItemWriter;
+ import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
  import org.springframework.beans.factory.annotation.Value;
  import org.springframework.context.annotation.Bean;
  import org.springframework.context.annotation.Configuration;
+ import org.springframework.core.io.FileSystemResource;
  import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
+ import java.io.File;
  import java.util.ArrayList;
  import java.util.HashMap;
  import java.util.List;
@@ -33,6 +39,8 @@ public class ItemStaticCrawlerJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+
+    private final CrawlerProperties crawlerProperties;
 
     private final ItemStaticCrawlerJobListener itemStaticCrawlerJobListener;
     private final ItemStaticCrawlerValidateTasklet itemStaticCrawlerValidateTasklet;
@@ -76,7 +84,7 @@ public class ItemStaticCrawlerJobConfig {
      @Bean
      public Step itemStaticCrawlerSlaveStep() {
          return stepBuilderFactory.get("itemStaticCrawlerSlaveStep")
-                 .<CrawlerItem, CrawlerItem>chunk(6)
+                 .<CrawlerItem, CrawlerItem>chunk(4)
                  .reader(itemStaticCrawlerItemReader(null, null))
                  .processor(itemStaticCrawlerItemProcessor)
                  .writer(itemStaticCrawlerItemWriter)
@@ -86,20 +94,40 @@ public class ItemStaticCrawlerJobConfig {
      @Bean
      @StepScope
      public MyBatisCursorItemReader<CrawlerItem> itemStaticCrawlerItemReader(SqlSessionFactory sqlSessionFactory,
-                                                                             @Value("#{stepExecutionContext['viewNumber']}") Integer viewNumber){
+                                                                             @Value("#{stepExecutionContext['cateId']}") String cateId){
 
          Map<String, Object> parameterValues = new HashMap<>();
-         parameterValues.put("cateId", ItemStaticCrawlerView.findView(viewNumber).getViewName());
+         parameterValues.put("cateId", cateId);
 
          MyBatisCursorItemReader<CrawlerItem> myBatisCursorItemReader = new MyBatisCursorItemReader<>();
          myBatisCursorItemReader.setSqlSessionFactory(sqlSessionFactory);
          myBatisCursorItemReader.setParameterValues(parameterValues);
          myBatisCursorItemReader.setQueryId("com.assadev.batch.crawler.item.mapper.ItemMapper.getItemList");
+
          return myBatisCursorItemReader;
 
      }
 
-
+//     @Bean
+//     @StepScope
+//     public JsonFileItemWriter<CrawlerItem> writer(@Value("#{jobExecutionContext['crawlerPath']}") String crawlerPath,
+//                                                   @Value("#{stepExecutionContext['cateId']}") String cateId){
+//         String resource = crawlerPath + File.separator + cateId + "_item" + fileCount + ".json";
+//         if( crawlerProperties.getFileRowMaxSize() < rowCount + 2) {
+//             rowCount = 0;
+//             fileCount = fileCount + 1;
+//             resource = crawlerPath + File.separator + cateId + "_item" + fileCount + ".json";
+//         }
+//
+//         log.info(" ㄴㄴㄴㄴ Crawler Writer = " + resource);
+//
+//        return new JsonFileItemWriterBuilder<CrawlerItem>()
+//                .name("itemWriterJson")
+//                .jsonObjectMarshaller(new JacksonJsonObjectMarshaller<>())
+//                .resource(new FileSystemResource(resource))
+//                .append(true)
+//                .build();
+//     }
 
 //     @Bean
 //     @StepScope

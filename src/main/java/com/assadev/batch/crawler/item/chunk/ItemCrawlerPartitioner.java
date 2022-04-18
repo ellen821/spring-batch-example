@@ -1,5 +1,6 @@
 package com.assadev.batch.crawler.item.chunk;
 
+import com.assadev.batch.crawler.item.constant.ItemStaticCrawlerView;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,8 @@ public class ItemCrawlerPartitioner implements Partitioner {
                 end = mapperCount;
             }
 
+
+            value.putString("cateId", ItemStaticCrawlerView.findView(end).getViewName());
             value.putInt("viewNumber", end);
 
             start += targetSize;

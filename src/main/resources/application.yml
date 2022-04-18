@@ -32,7 +32,7 @@ crawler:
   base-path: /System/Volumes/Data/data/{SERVICE_NAME}/{INDEX_TYPE}/{DATA_TYPE}
   directory-name-pattern: yyyyMMdd-HHmmss
   directory-remain-size: 1
-  file-row-max-size: 100000
+  file-row-max-size: 6
   file-name: item_%d.json
 
 #indexer:
