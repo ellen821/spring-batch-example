@@ -8,6 +8,7 @@ import com.assadev.batch.core.utils.CrawlerUtils;
 import com.assadev.batch.core.utils.DirectoryUtils;
 import com.assadev.batch.core.utils.Done;
 import com.assadev.batch.core.utils.Lock;
+import com.assadev.batch.crawler.item.mapper.ItemMapper;
 import com.assadev.batch.crawler.item.validation.CrawlerValidation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +17,14 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ItemStaticCrawlerValidateTasklet implements Tasklet {
+
+    private final ItemMapper itemMapper;
 
     /**
      *  - [전체수집] 실행여부 확인
@@ -39,8 +43,13 @@ public class ItemStaticCrawlerValidateTasklet implements Tasklet {
      * @return RepeatStatus
      * @throws Exception
      */
+    @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+
+//        itemMapper.truncateCrawlerDynamicTargetItmNo();
+//        itemMapper.insertCrawlerDynamicTargetItmNo(3);
+//        itemMapper.insertCrawlerDynamicTargetItmNo(2);
 
         log.info(" >>>>>>>>> 1. Item Static Validation <<<<<<<<< ");
         String basePath = contribution.getStepExecution().getJobExecution().getExecutionContext().getString("basePath");

@@ -7,4 +7,13 @@
     <select id="getItemList" parameterType="Map" resultType="com.assadev.batch.crawler.item.model.CrawlerItem">
         SELECT DQ_ID, ITEM_NO, ITEM_NM FROM ITEM WHERE CATE_ID = #{cateId} ORDER BY ITEM_NO ASC
     </select>
+
+    <delete id="truncateCrawlerDynamicTargetItmNo">
+        TRUNCATE CRAWLER_DYNAMIC_TARGET_ITEM_NO;
+    </delete>
+
+    <insert id="insertCrawlerDynamicTargetItmNo" parameterType="Integer">
+        INSERT CRAWLER_DYNAMIC_TARGET_ITEM_NO (ITEM_NO)
+        VALUES (#{itemNo});
+    </insert>
 </mapper>

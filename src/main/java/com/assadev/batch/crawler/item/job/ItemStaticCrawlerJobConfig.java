@@ -3,6 +3,7 @@
  import com.assadev.batch.core.properties.CrawlerProperties;
  import com.assadev.batch.crawler.item.chunk.*;
  import com.assadev.batch.crawler.item.constant.ItemStaticCrawlerView;
+ import com.assadev.batch.crawler.item.mapper.ItemMapper;
  import com.assadev.batch.crawler.item.model.CrawlerItem;
  import com.assadev.batch.crawler.item.tasklet.ItemStaticCrawlerCompleteTasklet;
  import com.assadev.batch.crawler.item.tasklet.ItemStaticCrawlerValidateTasklet;
@@ -12,27 +13,34 @@
  import org.mybatis.spring.batch.MyBatisCursorItemReader;
  import org.springframework.batch.core.Job;
  import org.springframework.batch.core.Step;
+ import org.springframework.batch.core.StepContribution;
  import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
  import org.springframework.batch.core.configuration.annotation.JobScope;
  import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
  import org.springframework.batch.core.configuration.annotation.StepScope;
  import org.springframework.batch.core.launch.support.RunIdIncrementer;
+ import org.springframework.batch.core.scope.context.ChunkContext;
+ import org.springframework.batch.core.step.tasklet.Tasklet;
  import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
  import org.springframework.batch.item.json.JsonFileItemWriter;
  import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
+ import org.springframework.batch.repeat.RepeatStatus;
+ import org.springframework.beans.factory.annotation.Qualifier;
  import org.springframework.beans.factory.annotation.Value;
  import org.springframework.context.annotation.Bean;
  import org.springframework.context.annotation.Configuration;
  import org.springframework.core.io.FileSystemResource;
  import org.springframework.core.task.SimpleAsyncTaskExecutor;
+ import org.springframework.transaction.annotation.Transactional;
 
  import java.io.File;
+ import java.sql.SQLException;
  import java.util.ArrayList;
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
 
- @Slf4j
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class ItemStaticCrawlerJobConfig {
@@ -93,14 +101,14 @@ public class ItemStaticCrawlerJobConfig {
 
      @Bean
      @StepScope
-     public MyBatisCursorItemReader<CrawlerItem> itemStaticCrawlerItemReader(SqlSessionFactory sqlSessionFactory,
+     public MyBatisCursorItemReader<CrawlerItem> itemStaticCrawlerItemReader(@Qualifier("primarySqlSessionFactory") SqlSessionFactory primarySqlSessionFactory,
                                                                              @Value("#{stepExecutionContext['cateId']}") String cateId){
 
          Map<String, Object> parameterValues = new HashMap<>();
          parameterValues.put("cateId", cateId);
 
          MyBatisCursorItemReader<CrawlerItem> myBatisCursorItemReader = new MyBatisCursorItemReader<>();
-         myBatisCursorItemReader.setSqlSessionFactory(sqlSessionFactory);
+         myBatisCursorItemReader.setSqlSessionFactory(primarySqlSessionFactory);
          myBatisCursorItemReader.setParameterValues(parameterValues);
          myBatisCursorItemReader.setQueryId("com.assadev.batch.crawler.item.mapper.ItemMapper.getItemList");
 

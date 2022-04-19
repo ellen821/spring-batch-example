@@ -6,6 +6,8 @@ import com.assadev.batch.core.exception.ValidationException;
 import com.assadev.batch.core.utils.DateUtils;
 import com.assadev.batch.core.utils.DirectoryUtils;
 import com.assadev.batch.core.utils.Done;
+import com.assadev.batch.crawler.item.mapper.ItemMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
@@ -13,17 +15,26 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.listener.StepExecutionListenerSupport;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ItemStaticCrawlerListener  extends StepExecutionListenerSupport {
 
+    private final ItemMapper itemMapper;
+
+    @Transactional(rollbackFor = Exception.class, value = "primaryTransactionManager")
     @Override
     public void beforeStep(StepExecution stepExecution) {
         if(stepExecution.getStatus() == BatchStatus.STARTED) {
             log.info(" >>>>>>>>> 2. Item Static Crawler Before <<<<<<<<< ");
+
+
+            itemMapper.insertCrawlerDynamicTargetItmNo(3);
+            itemMapper.insertCrawlerDynamicTargetItmNo(2);
 
             //TODO: Main 수집 쿼리 실행 전 작업
             // - 수집폴더 생성

@@ -9,4 +9,6 @@ import java.util.Map;
 @PrimaryConnection
 public interface ItemMapper {
     List<CrawlerItem> getItemList(Map<String,Object> param);
+    void truncateCrawlerDynamicTargetItmNo();
+    void insertCrawlerDynamicTargetItmNo(Integer itemNo);
 }

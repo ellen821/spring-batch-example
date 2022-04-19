@@ -33,7 +33,7 @@ class PrimaryByBatisConfig {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean
+    @Bean(name = "primaryTransactionManager")
     public PlatformTransactionManager transactionManager(@Qualifier("primaryDataSource") DataSource primaryDataSource) {
         DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(primaryDataSource);
         transactionManager.setGlobalRollbackOnParticipationFailure(false);
