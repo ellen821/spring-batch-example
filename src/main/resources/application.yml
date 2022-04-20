@@ -35,8 +35,8 @@ crawler:
   file-row-max-size: 6
   file-name: item_%d.json
 
-#indexer:
-#  base-path: /System/Volumes/Data/data/{SERVICE_NAME}/{CLUSTER_NAME}/{INDEX_TYPE}/{DATA_TYPE}
+indexer:
+  base-path: /System/Volumes/Data/data/{SERVICE_NAME}/{CLUSTER_NAME}/{INDEX_TYPE}/{DATA_TYPE}
 #  es:
 #    host: localhost
 #    port: 9200
@@ -58,11 +58,13 @@ item:
 #      source-tables:
 #        - V_SEARCH_ITEM_001
 #        - V_SEARCH_ITEM_002
-#  indexer:
-#    service-aliaes:
-#      - item
-#    static:
-#      thread-count: 2
+  indexer:
+    service-aliaes:
+      - item
+    static:
+      thread-count: 2
+      max-thread-count: 2
+      queue-capacity: 15
 #      shards: 3
 #      replicas: 1
 #      refresh-intaval: 5s

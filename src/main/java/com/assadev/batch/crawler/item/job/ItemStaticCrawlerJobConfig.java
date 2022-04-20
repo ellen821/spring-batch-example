@@ -31,6 +31,8 @@
  import org.springframework.context.annotation.Configuration;
  import org.springframework.core.io.FileSystemResource;
  import org.springframework.core.task.SimpleAsyncTaskExecutor;
+ import org.springframework.core.task.TaskExecutor;
+ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  import org.springframework.transaction.annotation.Transactional;
 
  import java.io.File;
@@ -39,16 +41,15 @@
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
+ import java.util.concurrent.ThreadPoolExecutor;
 
-@Slf4j
+ @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class ItemStaticCrawlerJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-    private final CrawlerProperties crawlerProperties;
 
     private final ItemStaticCrawlerJobListener itemStaticCrawlerJobListener;
     private final ItemStaticCrawlerValidateTasklet itemStaticCrawlerValidateTasklet;
@@ -84,10 +85,23 @@ public class ItemStaticCrawlerJobConfig {
                 .listener(itemStaticCrawlerListener)
                 .partitioner(itemStaticCrawlerSlaveStep().getName(), itemCrawlerPartitioner)
                 .step(itemStaticCrawlerSlaveStep())
-                .gridSize(2)
-                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .gridSize(4) // poolSize
+                .taskExecutor(threadPoolTaskExecutor1())
                 .build();
     }
+
+     @Bean
+     public TaskExecutor threadPoolTaskExecutor1() {
+         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+         taskExecutor.setCorePoolSize(4); //기본 쓰레드 사이즈
+         taskExecutor.setMaxPoolSize(4); //최대 쓰레드 사이즈
+         taskExecutor.setQueueCapacity(15); //Max쓰레드가 동작하는 경우 대기하는 queue 사이즈
+         taskExecutor.setThreadNamePrefix("Executor-");
+         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+//        executor.setWaitForTasksToCompleteOnShutdown(Boolean.TRUE);
+         taskExecutor.initialize();
+         return taskExecutor;
+     }
 
      @Bean
      public Step itemStaticCrawlerSlaveStep() {
