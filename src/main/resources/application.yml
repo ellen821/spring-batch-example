@@ -1,6 +1,6 @@
 spring:
   application:
-    name: onstyle-example-batch
+    name: assadev-batch-example
   profiles:
     default: local # default profile
   main:

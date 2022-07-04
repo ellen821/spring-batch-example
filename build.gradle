@@ -1,14 +1,9 @@
 // build script 라이브러리 클래스패스 추가.
 buildscript {
     ext {
-        domainName = "onstyle-example-batch"
+        domainName = "batch"
         // java version
         javaVersion = JavaVersion.VERSION_17
-        // Library 버전.
-        projectLibraryVersion = "0.0.1.RELEASE"
-        // onstyle-framework include 버전 정의.
-        onStyleFrameworkVersion = "1.0.0.BUILD-SNAPSHOT"
-        onStyleStarterVersion = "1.0.0.BUILD-SNAPSHOT"
         // springBoot 버전 정의.
         springBootVersion = '2.6.6'
         // lombok version
@@ -35,7 +30,7 @@ wrapper {
 }
 
 allprojects {
-    group "com.cjonstyle.${domainName}"
+    group "com.assadev.${domainName}"
     idea {
         module {
             inheritOutputDirs = false
